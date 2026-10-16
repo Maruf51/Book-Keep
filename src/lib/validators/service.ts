@@ -11,3 +11,6 @@ export const serviceSchema = z.object({
 });
 
 export type ServiceInput = z.infer<typeof serviceSchema>;
+
+export const serviceUpdateSchema = serviceSchema.partial();
+export type ServiceUpdateInput = z.infer<typeof serviceUpdateSchema>;
