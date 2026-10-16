@@ -283,16 +283,16 @@ Acceptance: `yarn test` green; anonymous `/dashboard` redirects to `/login`; own
 
 ### Phase 2 — Services & staff CRUD + working hours
 Depends on: P1
-**Phase status:** todo
+**Phase status:** done (2026-10-16)
 
-- [ ] P2-T1 API services: `GET/POST /api/services`, `GET/PATCH/DELETE /api/services/[id]` (DELETE = `isActive:false`), tenant-scoped, Zod, integer prices
-- [ ] P2-T2 API staff: `GET/POST /api/staff`, `PATCH /api/staff/[id]` (weeklyHours, daysOff, isActive) — staff role may PATCH only own profile
-- [ ] P2-T3 `POST /api/staff/invite` (owner): create Staff + User (role staff, random temp password), email invite via `lib/email` (console stub without key), link `staffProfileId`
-- [ ] P2-T4 `src/lib/email.ts` — Resend wrapper + `src/emails/` React Email templates (start with StaffInvite); console transport when no `RESEND_API_KEY`
-- [ ] P2-T5 `/dashboard/services` — table + create/edit dialog (duration, buffer, price, staff multi-select, active toggle); TanStack Query mutations + invalidation
-- [ ] P2-T6 `/dashboard/staff` — list, invite dialog, **weekly hours editor** (7 weekdays, add/remove ranges, HH:mm inputs), days-off editor (date + reason); holidays are full days-off entries
-- [ ] P2-T7 `/dashboard/availability` — staff self-service hours editor (own profile only)
-- [ ] P2-T8 Tests: tenant isolation (A cannot read/PATCH B's service/staff → 404); staff cannot PATCH another staff
+- [x] P2-T1 API services: `GET/POST /api/services`, `GET/PATCH/DELETE /api/services/[id]` (DELETE = `isActive:false`), tenant-scoped, Zod, integer prices
+- [x] P2-T2 API staff: `GET/POST /api/staff`, `PATCH /api/staff/[id]` (weeklyHours, daysOff, isActive) — staff role may PATCH only own profile
+- [x] P2-T3 `POST /api/staff/invite` (owner): create Staff + User (role staff, random temp password), email invite via `lib/email` (console stub without key), link `staffProfileId`
+- [x] P2-T4 `src/lib/email.ts` — Resend wrapper + `src/emails/` React Email templates (start with StaffInvite); console transport when no `RESEND_API_KEY`
+- [x] P2-T5 `/dashboard/services` — table + create/edit dialog (duration, buffer, price, staff multi-select, active toggle); TanStack Query mutations + invalidation
+- [x] P2-T6 `/dashboard/staff` — list, invite dialog, **weekly hours editor** (7 weekdays, add/remove ranges, HH:mm inputs), days-off editor (date + reason); holidays are full days-off entries
+- [x] P2-T7 `/dashboard/availability` — staff self-service hours editor (own profile only)
+- [x] P2-T8 Tests: tenant isolation (A cannot read/PATCH B's service/staff → 404); staff cannot PATCH another staff
 
 Acceptance: full CRUD works in UI; invite email logs/flows; isolation tests green.
 

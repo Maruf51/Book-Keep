@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z, ZodError } from "zod";
 
 export function jsonError(code: string, message: string, status = 400) {
   return Response.json(
@@ -33,4 +33,48 @@ export function handleMongoError(error: unknown) {
   }
 
   return jsonError("INTERNAL", mongoError.message ?? "An unexpected error occurred.", 500);
+}
+
+/**
+ * Central error handler for route handlers. Maps the typed errors thrown by
+ * `requireRole` (UNAUTHORIZED/FORBIDDEN), Zod validation errors, Mongo
+ * duplicate-key errors, and ObjectId cast errors onto the shared
+ * `{ error: { code, message } }` envelope.
+ */
+export function handleRouteError(
+  error: unknown,
+  opts?: { duplicateCode?: string; duplicateMessage?: string }
+): Response {
+  const message = error instanceof Error ? error.message : "";
+
+  if (message === "UNAUTHORIZED") {
+    return jsonError("UNAUTHORIZED", "You must be signed in to do that.", 401);
+  }
+
+  if (message === "FORBIDDEN") {
+    return jsonError("FORBIDDEN", "You don't have permission to do that.", 403);
+  }
+
+  if (error instanceof ZodError) {
+    const first = error.issues[0];
+    return jsonError("VALIDATION_ERROR", first?.message ?? "Invalid request data.", 400);
+  }
+
+  const named = error as { code?: number; name?: string };
+
+  if (named.code === 11000) {
+    return jsonError(
+      opts?.duplicateCode ?? "CONFLICT",
+      opts?.duplicateMessage ?? "That value is already in use.",
+      409
+    );
+  }
+
+  // Invalid ObjectId in a route param — treat as not found, not a crash.
+  if (named.name === "CastError") {
+    return jsonError("NOT_FOUND", "Resource not found.", 404);
+  }
+
+  console.error("[api] unexpected error", error);
+  return jsonError("INTERNAL", "An unexpected error occurred.", 500);
 }

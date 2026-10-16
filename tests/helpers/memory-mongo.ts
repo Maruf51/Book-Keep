@@ -3,6 +3,12 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 
 let mongoServer: MongoMemoryServer | null = null;
 
+declare global {
+  var __bookkeep_mongoose_cache:
+    | { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null }
+    | undefined;
+}
+
 export async function startMemoryMongo() {
   if (mongoose.connection.readyState !== 0) {
     return;
@@ -10,12 +16,20 @@ export async function startMemoryMongo() {
 
   mongoServer = await MongoMemoryServer.create();
   await mongoose.connect(mongoServer.getUri(), { dbName: "bookkeep-test" });
+
+  // Prime the connectToDatabase() cache so route handlers reuse this
+  // in-memory connection instead of dialing MONGODB_URI.
+  globalThis.__bookkeep_mongoose_cache = {
+    conn: mongoose,
+    promise: Promise.resolve(mongoose),
+  };
 }
 
 export async function stopMemoryMongo() {
   if (mongoose.connection.readyState !== 0) {
     await mongoose.disconnect();
   }
+  globalThis.__bookkeep_mongoose_cache = undefined;
 
   if (mongoServer) {
     await mongoServer.stop();
