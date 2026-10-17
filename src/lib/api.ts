@@ -1,5 +1,22 @@
 import { z, ZodError } from "zod";
 
+/**
+ * Domain error carrying an API error `code`, a human message and an HTTP
+ * status. Thrown by lib helpers (e.g. `lib/booking.ts`) and unwrapped by
+ * `handleRouteError` into the shared `{ error: { code, message } }` envelope.
+ */
+export class HttpError extends Error {
+  readonly code: string;
+  readonly status: number;
+
+  constructor(code: string, message: string, status = 400) {
+    super(message);
+    this.name = "HttpError";
+    this.code = code;
+    this.status = status;
+  }
+}
+
 export function jsonError(code: string, message: string, status = 400) {
   return Response.json(
     {
@@ -53,6 +70,10 @@ export function handleRouteError(
 
   if (message === "FORBIDDEN") {
     return jsonError("FORBIDDEN", "You don't have permission to do that.", 403);
+  }
+
+  if (error instanceof HttpError) {
+    return jsonError(error.code, error.message, error.status);
   }
 
   if (error instanceof ZodError) {

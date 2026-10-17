@@ -299,66 +299,66 @@ Acceptance: full CRUD works in UI; invite email logs/flows; isolation tests gree
 ---
 ### Phase 3 — Availability engine + public pages
 Depends on: P2
-**Phase status:** todo
+**Phase status:** done (2026-10-17)
 
-- [ ] P3-T1 `src/lib/time.ts` — Luxon helpers: date-in-TZ → UTC range bounds, weekday lookup, label formatting, slot-grid iteration, DST-safe arithmetic
-- [ ] P3-T2 `src/lib/availability.ts` — **pure** `getSlots(input): Slot[]` implementing spec §7 steps 1–6 (no DB, no globals): working ranges for weekday → daysOff/override → grid candidates fitting `duration+buffer` → minNotice/maxDaysAhead filter → overlap removal → `{ startAt ISO, label }`
-- [ ] P3-T3 `tests/unit/availability.test.ts` — ≥20 cases: empty hours, multi-range day, buffer pushes past range end, interval 15/30, days-off blocks, custom hours override on a day-off, min-notice boundary, max-days-ahead, existing booking overlap (pending+confirmed block; cancelled does not), **Asia/Dhaka** (no DST) and **America/New_York** (Jan vs Jul, DST transition day)
-- [ ] P3-T4 `GET /api/public/[slug]` → `{ business: {name,slug,timezone,currency,phone,address,logoUrl}, services: [active], staff: [active] }` | 404
-- [ ] P3-T5 `GET /api/public/[slug]/slots` → §6 contract; rate-limited; validates service/staff belong to the slug's business
-- [ ] P3-T6 `/b/[slug]` page — server component (`use cache` + `cacheLife('minutes')`): header, service cards (name, description, duration, price formatted in business currency/TZ), staff avatars, Book now → wizard; 404 for unknown slug
-- [ ] P3-T7 `/b/[slug]/book` wizard steps 1–3 — service → staff (incl. Any available: union of slots across eligible staff, pin staffId at booking time) → date picker (bounded by maxDaysAhead) → time grid from `/slots`, with loading/disabled states
+- [x] P3-T1 `src/lib/time.ts` — Luxon helpers: date-in-TZ → UTC range bounds, weekday lookup, label formatting, slot-grid iteration, DST-safe arithmetic
+- [x] P3-T2 `src/lib/availability.ts` — **pure** `getSlots(input): Slot[]` implementing spec §7 steps 1–6 (no DB, no globals): working ranges for weekday → daysOff/override → grid candidates fitting `duration+buffer` → minNotice/maxDaysAhead filter → overlap removal → `{ startAt ISO, label }`
+- [x] P3-T3 `tests/unit/availability.test.ts` — ≥20 cases: empty hours, multi-range day, buffer pushes past range end, interval 15/30, days-off blocks, custom hours override on a day-off, min-notice boundary, max-days-ahead, existing booking overlap (pending+confirmed block; cancelled does not), **Asia/Dhaka** (no DST) and **America/New_York** (Jan vs Jul, DST transition day)
+- [x] P3-T4 `GET /api/public/[slug]` → `{ business: {name,slug,timezone,currency,phone,address,logoUrl}, services: [active], staff: [active] }` | 404
+- [x] P3-T5 `GET /api/public/[slug]/slots` → §6 contract; rate-limited; validates service/staff belong to the slug's business
+- [x] P3-T6 `/b/[slug]` page — server component (`use cache` + `cacheLife('minutes')`): header, service cards (name, description, duration, price formatted in business currency/TZ), staff avatars, Book now → wizard; 404 for unknown slug
+- [x] P3-T7 `/b/[slug]/book` wizard steps 1–3 — service → staff (incl. Any available: union of slots across eligible staff, pin staffId at booking time) → date picker (bounded by maxDaysAhead) → time grid from `/slots`, with loading/disabled states
 
 Acceptance: unit suite green; slots endpoint verified against a manually inserted booking in an integration test.
 
 ### Phase 4 — Booking creation, manage page, emails
 Depends on: P3
-**Phase status:** todo
+**Phase status:** done (2026-10-17)
 
-- [ ] P4-T1 `src/lib/booking.ts` — `buildSlotKeys()` (§5 rule), `createBooking()` (find-or-create Customer by email/phone per business; generate 32-byte token, store sha256; conflict-safe insert, 11000 → SLOT_TAKEN; autoConfirm logic), `cancelBooking()` (enforce cancelWindowHours), `rescheduleBooking()` (validate new slot, free old keys + insert new atomically), `expirePendingBookings()` (used by cron)
-- [ ] P4-T2 `POST /api/public/[slug]/bookings` → §6 contract; rate-limited; server-side price from Service → `priceSnapshot`; confirmation email dispatched
-- [ ] P4-T3 Public token APIs: `GET /api/public/bookings/[token]`, `POST .../cancel`, `POST .../reschedule` (new startAt re-validated; token matched by hash)
-- [ ] P4-T4 Email templates: `BookingConfirmation`, `BookingReminder`, `BookingCancelled` (React Email, EN strings; BN added in P10)
-- [ ] P4-T5 Wizard steps 4–5 — details form (name/email/phone, RHF+Zod) → POST → success screen showing **manage link** (token kept in sessionStorage for refresh); email sent (console stub without key)
-- [ ] P4-T6 `/booking/[token]` — booking details displayed in business timezone (with TZ note), status badge, cancel (disabled outside window with explanation), reschedule flow (date+time picker hitting public /slots), cancelled/not-found states
-- [ ] P4-T7 Integration tests `tests/integration/booking-conflict.test.ts` — two concurrent `createBooking` for the same slot: exactly one succeeds, one 409; cancel then rebook succeeds; reschedule frees old keys
+- [x] P4-T1 `src/lib/booking.ts` — `buildSlotKeys()` (§5 rule), `createBooking()` (find-or-create Customer by email/phone per business; generate 32-byte token, store sha256; conflict-safe insert, 11000 → SLOT_TAKEN; autoConfirm logic), `cancelBooking()` (enforce cancelWindowHours), `rescheduleBooking()` (validate new slot, free old keys + insert new atomically), `expirePendingBookings()` (used by cron)
+- [x] P4-T2 `POST /api/public/[slug]/bookings` → §6 contract; rate-limited; server-side price from Service → `priceSnapshot`; confirmation email dispatched
+- [x] P4-T3 Public token APIs: `GET /api/public/bookings/[token]`, `POST .../cancel`, `POST .../reschedule` (new startAt re-validated; token matched by hash)
+- [x] P4-T4 Email templates: `BookingConfirmation`, `BookingReminder`, `BookingCancelled` (React Email, EN strings; BN added in P10)
+- [x] P4-T5 Wizard steps 4–5 — details form (name/email/phone, RHF+Zod) → POST → success screen showing **manage link** (token kept in sessionStorage for refresh); email sent (console stub without key)
+- [x] P4-T6 `/booking/[token]` — booking details displayed in business timezone (with TZ note), status badge, cancel (disabled outside window with explanation), reschedule flow (date+time picker hitting public /slots), cancelled/not-found states
+- [x] P4-T7 Integration tests `tests/integration/booking-conflict.test.ts` — two concurrent `createBooking` for the same slot: exactly one succeeds, one 409; cancel then rebook succeeds; reschedule frees old keys (+ `tests/integration/booking-flow.test.ts` HTTP flow)
 
 Acceptance: end-to-end customer flow manually verified; conflict tests green.
 
 ### Phase 5 — Dashboard: bookings, calendar, customers, summary
 Depends on: P4
-**Phase status:** todo
+**Phase status:** done (2026-10-17)
 
-- [ ] P5-T1 `GET/POST /api/bookings` — filters `status, from, to, staffId, q`; **staff scoping**; POST = manual booking (`source:'manual'`, same conflict-safe path)
-- [ ] P5-T2 `GET/PATCH /api/bookings/[id]` — PATCH: status transitions (confirm, complete, no_show, cancel) and reschedule with slot validation; role guards
-- [ ] P5-T3 `GET /api/dashboard/summary` → `{ today: { total, pending, confirmed, completed, cancelled }, revenue: { today, month }, noShowRate }`
-- [ ] P5-T4 `GET /api/customers`, `GET /api/customers/[id]` → profile + booking history + total spent (owner-only)
-- [ ] P5-T5 `/dashboard/bookings` — filter bar (status, date range, staff), search box, status badges, empty/loading states, row click → detail
-- [ ] P5-T6 `/dashboard/bookings/[id]` — full detail, status action buttons, inline reschedule, customer block, Create invoice CTA (wired in P6 — disabled until then)
-- [ ] P5-T7 `/dashboard/bookings/new` — manual booking form (service → staff → date/time, customer search-or-create, source manual)
-- [ ] P5-T8 `/dashboard/calendar` — week view default (business-hours rows, 7 day columns, bookings positioned by time), day + month modes, staff filter, click → detail
-- [ ] P5-T9 `/dashboard` — real home: today's bookings (list + counts), revenue summary cards, upcoming next 7 days (uses summary + bookings endpoints)
-- [ ] P5-T10 `/dashboard/customers` (search) + `/dashboard/customers/[id]` (history, editable notes, total spent)
-- [ ] P5-T11 Integration test: staff role gets only own bookings from `GET /api/bookings`
+- [x] P5-T1 `GET/POST /api/bookings` — filters `status, from, to, staffId, q`; **staff scoping**; POST = manual booking (`source:'manual'`, same conflict-safe path)
+- [x] P5-T2 `GET/PATCH /api/bookings/[id]` — PATCH: status transitions (confirm, complete, no_show, cancel) and reschedule with slot validation; role guards
+- [x] P5-T3 `GET /api/dashboard/summary` → `{ today: { total, pending, confirmed, completed, cancelled }, revenue: { today, month }, noShowRate }`
+- [x] P5-T4 `GET /api/customers`, `GET /api/customers/[id]` → profile + booking history + total spent (owner-only)
+- [x] P5-T5 `/dashboard/bookings` — filter bar (status, date range, staff), search box, status badges, empty/loading states, row click → detail
+- [x] P5-T6 `/dashboard/bookings/[id]` — full detail, status action buttons, inline reschedule, customer block, Create invoice CTA (wired in P6 — disabled until then)
+- [x] P5-T7 `/dashboard/bookings/new` — manual booking form (service → staff → date/time, customer search-or-create, source manual)
+- [x] P5-T8 `/dashboard/calendar` — week view default (business-hours rows, 7 day columns, bookings positioned by time), day + month modes, staff filter, click → detail
+- [x] P5-T9 `/dashboard` — real home: today's bookings (list + counts), revenue summary cards, upcoming next 7 days (uses summary + bookings endpoints)
+- [x] P5-T10 `/dashboard/customers` (search) + `/dashboard/customers/[id]` (history, editable notes, total spent)
+- [x] P5-T11 Integration test: staff role gets only own bookings from `GET /api/bookings` (`tests/integration/booking-dashboard.test.ts`)
 
 Acceptance: owner and staff roles both usable; filters/scoping verified; tests green.
 
 ---
 ### Phase 6 — Invoices, PDF, Stripe, settings
 Depends on: P5
-**Phase status:** todo
-Deps to install: `stripe @react-pdf/renderer` (verify React 19 compat — §8)
+**Phase status:** done (2026-10-17)
+Deps installed: `stripe@^23` `@react-pdf/renderer@^4.9` (peer deps include React 19 — §8 item 2); `@react-pdf/renderer` + `stripe` added to `serverExternalPackages` in `next.config.ts`.
 
-- [ ] P6-T1 `src/lib/invoice.ts` — `nextInvoiceNumber()` via `findOneAndUpdate({_id: businessId}, {$inc: {invoiceCounter: 1}})` atomic; `createInvoiceFromBooking()` (line items from service + `priceSnapshot`, tax from business settings, totals); `publicToken` generation
-- [ ] P6-T2 APIs — `GET/POST /api/invoices` (POST from bookingId, owner, booking completed/confirmed), `GET/PATCH /api/invoices/[id]` (draft edits only), `POST .../send` (emails public link, status → sent), `GET .../pdf` (streams application/pdf)
-- [ ] P6-T3 `src/lib/pdf.tsx` — `InvoiceDocument` (@react-pdf/renderer): business header/logo, invoice number, customer, line items, totals, booking ref, currency
-- [ ] P6-T4 `/invoice/[publicToken]` — public view (business TZ/currency), status states, Pay button → checkout; paid state with paid date
-- [ ] P6-T5 `POST /api/invoices/public/[token]/checkout` — creates Stripe Checkout Session (line items, `currency` from business, `metadata: { invoiceId }`, success/cancel URLs back to the public invoice); no key → 503 `STRIPE_NOT_CONFIGURED`
-- [ ] P6-T6 `POST /api/webhooks/stripe` — **raw body** signature verify (`constructEvent`); on `checkout.session.completed`: find invoice by metadata/stripeSessionId → if already `paid` **no-op (idempotent)** else set `status:'paid'`, `paidAt`, booking `paymentStatus:'paid'` (P8 also confirms deposit bookings); other events → 200 ignored; 400 on bad signature
-- [ ] P6-T7 `PATCH /api/business` + `/dashboard/settings` — profile form (name, slug with uniqueness feedback, timezone select, currency, phone, address, logoUrl), booking rules form (minNoticeHours, maxDaysAhead, cancelWindowHours, slotIntervalMinutes), autoConfirm toggle, deposit settings (fields exist; **activation in P8**), notifications (reminder hours ahead, default channel), payments panel (Stripe key configured? webhook secret set?)
-- [ ] P6-T8 `/dashboard/invoices` (paid/unpaid/void filters) + `/dashboard/invoices/[id]` (view, edit draft line items, Send, Download PDF)
-- [ ] P6-T9 Wire Create invoice CTA on booking detail → POST /api/invoices → navigate to new invoice
-- [ ] P6-T10 Tests: webhook idempotency (same signed event twice → one paid transition, booking updated once); invoice number uniqueness (10 parallel increments → 10 distinct numbers); tenant isolation on invoices
+- [x] P6-T1 `src/lib/invoice.ts` — `nextInvoiceNumber()` via `findOneAndUpdate({_id: businessId}, {$inc: {invoiceCounter: 1}})` atomic; `createInvoiceFromBooking()` (line items from service + `priceSnapshot`, tax from business settings, totals); `publicToken` generation
+- [x] P6-T2 APIs — `GET/POST /api/invoices` (POST from bookingId, owner, booking completed/confirmed), `GET/PATCH /api/invoices/[id]` (draft edits only), `POST .../send` (emails public link, status → sent), `GET .../pdf` (streams application/pdf)
+- [x] P6-T3 `src/lib/pdf.tsx` — `InvoiceDocument` (@react-pdf/renderer): business header/logo, invoice number, customer, line items, totals, booking ref, currency
+- [x] P6-T4 `/invoice/[publicToken]` — public view (business TZ/currency), status states, Pay button → checkout; paid state with paid date
+- [x] P6-T5 `POST /api/invoices/public/[token]/checkout` — creates Stripe Checkout Session (line items, `currency` from business, `metadata: { invoiceId }`, success/cancel URLs back to the public invoice); no key → 503 `STRIPE_NOT_CONFIGURED`
+- [x] P6-T6 `POST /api/webhooks/stripe` — **raw body** signature verify (`constructEvent`); on `checkout.session.completed`: find invoice by metadata/stripeSessionId → if already `paid` **no-op (idempotent)** else set `status:'paid'`, `paidAt`, booking `paymentStatus:'paid'` (P8 also confirms deposit bookings); other events → 200 ignored; 400 on bad signature
+- [x] P6-T7 `PATCH /api/business` + `/dashboard/settings` — profile form (name, slug with uniqueness feedback, timezone select, currency, phone, address, logoUrl), booking rules form (minNoticeHours, maxDaysAhead, cancelWindowHours, slotIntervalMinutes), autoConfirm toggle, deposit settings (fields exist; **activation in P8**), notifications (reminder hours ahead, default channel), payments panel (Stripe key configured? webhook secret set?)
+- [x] P6-T8 `/dashboard/invoices` (paid/unpaid/void filters) + `/dashboard/invoices/[id]` (view, edit draft line items, Send, Download PDF)
+- [x] P6-T9 Wire Create invoice CTA on booking detail → POST /api/invoices → navigate to new invoice
+- [x] P6-T10 Tests: webhook idempotency (same signed event twice → one paid transition, booking updated once); invoice number uniqueness (10 parallel increments → 10 distinct numbers); tenant isolation on invoices
 
 Acceptance: PDF renders; with Stripe test keys the full pay flow works; without keys → 503 + sensible UI; tests green.
 
@@ -431,11 +431,14 @@ Acceptance: CI green on push; README matches spec §18; deployed URL reachable.
 ## 8. Risks & fallbacks (record decisions here)
 
 1. **next-auth@5 beta vs Next 16** — verify peer deps at P1-T1 install. Fallback: `src/lib/auth-jose.ts` (jose-signed HTTP-only cookie) exposing the same `getCurrentUser`/`requireRole` surface; swap inside `lib/auth.ts` only. → **Decision:** ______
-2. **@react-pdf/renderer vs React 19** — verify at P6-T1. Fallback: `pdf-lib` programmatic generation. → **Decision:** ______
+2. **@react-pdf/renderer vs React 19** — verify at P6-T1. Fallback: `pdf-lib` programmatic generation. → **Decision:** keep `@react-pdf/renderer@^4.9` — its `peerDependencies.react` includes `^19.0.0`; `renderToBuffer` produces a valid PDF both via native ESM `import` and Node's `require(esm)`, so it works in Route Handlers. Listed in `serverExternalPackages` to keep its internal ESM (yoga-layout/fontkit) out of the bundle.
 3. **next-intl route restructure (P10-T4)** is the riskiest UI change — do it last, after all pages exist; `as-needed` prefix keeps spec URLs stable.
 4. **mongodb-memory-server** downloads a mongod binary on first run — cache in CI; document offline limitation.
 5. **External credentials unavailable** — everything gated by §3.6; e2e payment steps conditionally skip when no Stripe key.
 6. **Availability regressions** — never edit `lib/availability.ts` without running `tests/unit/availability.test.ts`.
+7. **Model index specs (P4)** — MongoDB rejects mixing `sparse: true` with `partialFilterExpression`. Fixed `bookings.slotKeys` (unique partial on `status in [pending,confirmed]`) and `customers.phone` (unique partial on `{ phone: { $type: "string" } }`, since `$ne: null` is also unsupported in partial filters). `tests/helpers/memory-mongo.ts` now runs `syncIndexes()` so the double-booking index is real in tests. → **Decision:** partialFilterExpression only, no `sparse`.
+8. **Dashboard scope decisions (P5)** — (a) `GET /api/bookings` staff scoping forces `staffId = session.staffProfileId`; POST manual bookings likewise pin staff callers to their own profile. (b) Summary **revenue** = sum of `priceSnapshot` for `completed` bookings (today / current month, business TZ); P10 switches analytics to paid invoices once P6 exists. `noShowRate` = `no_show / (completed + no_show)` over the trailing 30 days. (c) Customer reads (`GET /api/customers`, `[id]`) are owner-only per spec §5; the `[id]` payload now includes `totalSpent` + booking history. (d) Two session-scoped helper endpoints were added beyond §6's list: `GET /api/business` (dashboard TZ/currency; P6-T7 adds PATCH) and `GET /api/slots` (dashboard availability for manual booking + reschedule, mirroring the public slots route). → **Decision:** revenue from completed bookings until P6; helpers allowed.
+9. **Invoice decisions (P6)** — (a) Public invoice view is **server-rendered** from `getInvoiceByPublicToken` (no extra public GET route; §6 only lists the checkout POST). (b) `createInvoiceFromBooking` is idempotent per booking: an existing non-void invoice is returned instead of creating a duplicate. (c) `PATCH /api/invoices/[id]` accepts draft `lineItems` (totals recomputed from the business `taxRatePercent`) and a `void` transition; paid invoices are immutable. (d) The webhook is idempotent via a conditional `findOneAndUpdate({ status: { $ne: 'paid' } })` — only the first transition flips the invoice and its booking. (e) Invoice model keeps `publicToken` in plaintext (it is the URL secret) rather than a hash; it is not a credential and P7's secret-grep test targets `passwordHash`/`manageTokenHash`/`invite.tokenHash`. (f) The public `/invoice/[publicToken]` and the `.../checkout`+`/api/webhooks/stripe` routes stay unauthenticated/rate-limited by P7. → **Decision:** as above.
 
 ## 9. Definition of Done (global)
 

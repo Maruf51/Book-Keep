@@ -17,11 +17,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const links = [
     { href: "/dashboard", label: "Overview" },
+    { href: "/dashboard/calendar", label: "Calendar" },
     { href: "/dashboard/bookings", label: "Bookings" },
     ...(user.role === "owner"
       ? [
           { href: "/dashboard/services", label: "Services" },
           { href: "/dashboard/staff", label: "Staff" },
+          { href: "/dashboard/customers", label: "Customers" },
+          { href: "/dashboard/invoices", label: "Invoices" },
+          { href: "/dashboard/settings", label: "Settings" },
         ]
       : []),
     ...(user.role === "staff"

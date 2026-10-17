@@ -18,7 +18,7 @@ const customerSchema = new Schema(
 );
 
 customerSchema.index({ businessId: 1, email: 1 }, { unique: true, sparse: true });
-customerSchema.index({ businessId: 1, phone: 1 }, { unique: true, sparse: true, partialFilterExpression: { phone: { $exists: true, $ne: null } } });
+customerSchema.index({ businessId: 1, phone: 1 }, { unique: true, partialFilterExpression: { phone: { $type: "string" } } });
 
 export type CustomerDocument = InferSchemaType<typeof customerSchema> & {
   _id: mongoose.Types.ObjectId;

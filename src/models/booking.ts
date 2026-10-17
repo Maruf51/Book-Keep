@@ -41,7 +41,7 @@ const bookingSchema = new Schema(
 
 bookingSchema.index({ businessId: 1, startAt: 1 });
 bookingSchema.index({ staffId: 1, startAt: 1 });
-bookingSchema.index({ slotKeys: 1 }, { unique: true, sparse: true, partialFilterExpression: { status: { $in: ["pending", "confirmed"] } } });
+bookingSchema.index({ slotKeys: 1 }, { unique: true, partialFilterExpression: { status: { $in: ["pending", "confirmed"] } } });
 
 export type BookingDocument = InferSchemaType<typeof bookingSchema> & {
   _id: mongoose.Types.ObjectId;

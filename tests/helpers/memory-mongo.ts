@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
+import UserModel from "@/models/user";
+import BusinessModel from "@/models/business";
+import ServiceModel from "@/models/service";
+import StaffModel from "@/models/staff";
+import CustomerModel from "@/models/customer";
+import BookingModel from "@/models/booking";
+import InvoiceModel from "@/models/invoice";
 
 let mongoServer: MongoMemoryServer | null = null;
 
@@ -16,6 +23,18 @@ export async function startMemoryMongo() {
 
   mongoServer = await MongoMemoryServer.create();
   await mongoose.connect(mongoServer.getUri(), { dbName: "bookkeep-test" });
+
+  // Build every schema index (incl. the unique multikey partial index on
+  // bookings.slotKeys that enforces double-booking protection).
+  await Promise.all([
+    UserModel.syncIndexes(),
+    BusinessModel.syncIndexes(),
+    ServiceModel.syncIndexes(),
+    StaffModel.syncIndexes(),
+    CustomerModel.syncIndexes(),
+    BookingModel.syncIndexes(),
+    InvoiceModel.syncIndexes(),
+  ]);
 
   // Prime the connectToDatabase() cache so route handlers reuse this
   // in-memory connection instead of dialing MONGODB_URI.
